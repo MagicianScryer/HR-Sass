@@ -27,6 +27,7 @@ module.exports = {
   publicPath: '/',
   outputDir: 'dist',
   assetsDir: 'static',
+  // 避免每次都是报错 语法错误可以是警告
   lintOnSave: process.env.NODE_ENV === 'development',
   productionSourceMap: false,
   devServer: {
@@ -35,6 +36,13 @@ module.exports = {
     overlay: {
       warnings: false,
       errors: true
+    },
+    proxy: {
+      // 典型的反向代理将本地的127.0.0.1:8888 设为代理服务器代理http://ihrm-java.itheima.net/
+      '/api': {
+        target: 'http://ihrm-java.itheima.net/',
+        changeOrigin: true
+      }
     }
   },
   configureWebpack: {
