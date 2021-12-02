@@ -1,21 +1,29 @@
 // 导入处理token的方法
-import { getToken, setToken, removeToken } from '@/utils/auth'
+import { getToken, setToken, removeToken, setTimeStamp } from '@/utils/auth'
 // 导入登入api
-import { login } from '@/api/user'
+import { login, getUserInfo, getUserDetailById } from '@/api/user'
 
 // 状态
 const state = {
-  token: getToken()
+  token: getToken(),
+  userInfo: {}
 }
 // 修改状态
 const mutations = {
   setToken(state, token) {
     state.token = token
     setToken(token)
+    setTimeStamp()
   },
   removeToken(state) {
     state.token = null
     removeToken()
+  },
+  setUserInfo(state, user) {
+    state.userInfo = user
+  },
+  removeUserInfo(state) {
+    state.userInfo = {}
   }
 }
 // 执行异步
@@ -30,6 +38,18 @@ const actions = {
       // actions 修改state 必须通过mutations
       context.commit('setToken', res.data)
     }
+  },
+  // 封装获取用户信息的action
+  async getUserInfo(context) {
+    const result = await getUserInfo() // 获取返回值
+    const detile = await getUserDetailById(result.data.userId)
+    context.commit('setUserInfo', { ...result.data, ...detile.data }) // 将整个的个人信息设置到用户的vuex数据中
+    return result // 这里为什么要返回 为后面埋下伏笔
+  },
+  // 退出功能
+  logout(context) {
+    context.commit('removeToken')
+    context.commit('removeUserInfo')
   }
 }
 export default {

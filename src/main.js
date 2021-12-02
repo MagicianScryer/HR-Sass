@@ -13,7 +13,9 @@ import store from './store'
 import router from './router'
 
 import '@/icons' // icon
-import '@/permission' // permission control
+import '@/permission' // 路由守卫
+
+import * as directives from '@/directives' // 自定义指令
 
 /**
  * If you don't want to use mock-server
@@ -34,6 +36,13 @@ Vue.use(ElementUI, { locale })
 // Vue.use(ElementUI)
 
 Vue.config.productionTip = false
+// 注册自定义的指令
+// 遍历所有的directives对象注册为自定义组件
+// 转数组在遍历
+Object.keys(directives).forEach((key) => {
+  // 注册自定义指令
+  Vue.directive(key, directives[key])
+})
 
 new Vue({
   el: '#app',
