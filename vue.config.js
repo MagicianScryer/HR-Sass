@@ -30,6 +30,7 @@ module.exports = {
   // 避免每次都是报错 语法错误可以是警告
   lintOnSave: process.env.NODE_ENV === 'development',
   productionSourceMap: false,
+  // 只是进行了开发配置
   devServer: {
     port: port,
     open: true,
@@ -37,6 +38,7 @@ module.exports = {
       warnings: false,
       errors: true
     },
+    // 配置的代理设置
     proxy: {
       // 典型的反向代理将本地的127.0.0.1:8888 设为代理服务器代理http://ihrm-java.itheima.net/
       '/api': {

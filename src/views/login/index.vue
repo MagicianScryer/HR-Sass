@@ -59,7 +59,7 @@
 
       <div class="tips">
         <a href="javascript:;">还没有账号？立即注册</a>
-        <div><span>账号: admin(管理员)</span> <span>密码: 11111</span></div>
+        <div><span>账号: 13800000002(管理员)</span> <span>密码: 123456</span></div>
       </div>
     </el-form>
   </div>
@@ -67,6 +67,7 @@
 
 <script>
 import { validMobile } from '@/utils/validate'
+import { mapActions } from 'vuex'
 
 export default {
   name: 'Login',
@@ -87,8 +88,8 @@ export default {
     }
     return {
       loginForm: {
-        mobile: '15180395710',
-        password: '111111'
+        mobile: '13800000002',
+        password: '123456'
       },
       loginRules: {
         mobile: [{ required: true, trigger: 'blur', validator: validateUsername }],
@@ -108,6 +109,7 @@ export default {
     }
   },
   methods: {
+    ...mapActions(['user/goLogin']),
     showPwd() {
       if (this.passwordType === 'password') {
         this.passwordType = ''
@@ -119,21 +121,18 @@ export default {
       })
     },
     handleLogin() {
-      this.$refs.loginForm.validate((valid) => {
-        if (valid) {
+      this.$refs.loginForm.validate(async (vaid) => {
+        if (!vaid) {
+          return this.$message.error('表单验证失败')
+        }
+        try {
           this.loading = true
-          this.$store
-            .dispatch('user/login', this.loginForm)
-            .then(() => {
-              this.$router.push({ path: this.redirect || '/' })
-              this.loading = false
-            })
-            .catch(() => {
-              this.loading = false
-            })
-        } else {
-          console.log('error submit!!')
-          return false
+          await this['user/goLogin'](this.loginForm)
+          this.$router.push('/')
+        } catch (err) {
+          console.log(err)
+        } finally {
+          this.loading = false
         }
       })
     }
