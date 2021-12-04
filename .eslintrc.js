@@ -267,6 +267,7 @@ module.exports = {
     'vue/html-indent': 0,
     'vue/html-closing-bracket-newline': 0,
     'pace-before-function-paren': 0,
-    'space-before-function-paren': 0
+    'space-before-function-paren': 0,
+    'vue/attribute-hyphenation': 0
   }
 }

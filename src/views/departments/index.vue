@@ -3,94 +3,60 @@
     <div class="app-container">
       <!-- 头部结构 -->
       <el-card class="tree-card">
-        <!-- 用了一个行列布局 -->
-        <el-row type="flex" justify="space-between" align="middle" style="height: 40px">
-          <el-col>
-            <span>江苏传智播客教育科技股份有限公司</span>
-          </el-col>
-          <el-col :span="4">
-            <el-row type="flex" justify="end">
-              <!-- 两个内容 -->
-              <el-col>负责人</el-col>
-              <el-col>
-                <!-- 下拉菜单 element -->
-                <el-dropdown>
-                  <span> 操作<i class="el-icon-arrow-down" /> </span>
-                  <!-- 下拉菜单 -->
-                  <el-dropdown-menu slot="dropdown">
-                    <el-dropdown-item>添加子部门</el-dropdown-item>
-                  </el-dropdown-menu>
-                </el-dropdown>
-              </el-col>
-            </el-row>
-          </el-col>
-        </el-row>
         <!-- 树形组件 -->
-        <!-- 树形组件 -->
-        <el-tree :data="departs" :props="defaultProps" @node-click="handleNodeClick">
-          <!-- 传入内容 插槽内容 会循环多次 有多少节点 就循环多少次 -->
-          <!-- 作用域插槽 slot-scope="obj" 接收传递给插槽的数据   data 每个节点的数据对象-->
-          <el-row
+        <tree-item :treeNode="company" :isRoot="true"></tree-item>
+        <el-tree :data="departs" :props="defaultProps">
+          <tree-item
             slot-scope="{ data }"
-            type="flex"
-            justify="space-between"
-            align="middle"
-            style="height: 40px; width: 100%"
-          >
-            <el-col>
-              <!-- 左侧内容 -->
-              <span>{{ data.name }}</span>
-            </el-col>
-            <el-col :span="4">
-              <el-row type="flex" justify="end">
-                <el-col>{{ data.manager }}</el-col>
-                <el-col>
-                  <!-- 放置下拉菜单 -->
-                  <el-dropdown>
-                    <!-- 内容 -->
-                    <span
-                      >操作
-                      <i class="el-icon-arrow-down" />
-                    </span>
-                    <!-- 具名插槽 -->
-                    <el-dropdown-menu slot="dropdown">
-                      <!-- 下拉选项 -->
-                      <el-dropdown-item>添加子部门</el-dropdown-item>
-                      <el-dropdown-item>编辑部门</el-dropdown-item>
-                      <el-dropdown-item>删除部门</el-dropdown-item>
-                    </el-dropdown-menu>
-                  </el-dropdown>
-                </el-col>
-              </el-row>
-
-              <!-- 右侧内容 -->
-            </el-col>
-          </el-row>
+            :treeNode="data"
+            @delDepts="getDepartments()"
+          ></tree-item>
         </el-tree>
+        <!-- 树形组件 -->
       </el-card>
     </div>
   </div>
 </template>
 
 <script>
+// 导入树形结构的item
+import treeItem from './components/treeItem.vue'
+// 导入获取组织架构数据api
+import { getDepartment } from '@/api/departments'
+// 导入处理树形数据的方法
+import { tranListToTreeData } from '@/utils/index'
+
 export default {
   // 组织架构
   name: 'Departments',
+  components: {
+    treeItem
+  },
   data() {
     return {
-      departs: [
-        { name: '总裁办', manager: '曹操', children: [{ name: '董事会', manager: '曹丕' }] },
-        { name: '行政部', manager: '刘备' },
-        { name: '人事部', manager: '孙权' }
-      ],
+      departs: [],
+      company: { name: '江苏传智播客教育科技股份有限公司', manager: '负责人' },
       defaultProps: {
         children: 'children',
         label: 'name'
       }
     }
   },
+  mounted() {
+    this.getDepartments()
+  },
   methods: {
-    handleNodeClick(data) {}
+    async getDepartments() {
+      try {
+        var { data: res } = await getDepartment()
+        console.log(res)
+      } catch (err) {
+        console.log(err)
+      }
+      // 赋值为本地
+      this.company.name = res.companyName
+      this.departs = tranListToTreeData(res.depts, '')
+    }
   }
 }
 </script>
