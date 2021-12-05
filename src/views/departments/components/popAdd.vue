@@ -79,6 +79,45 @@ export default {
     }
   },
   data() {
+    const nameCheck = async (rule, value, callback) => {
+      // 先要获取最新的组织架构数据
+      const { data: res } = await getDepartment()
+      //  检查重复规则 需要支持两种 新增模式 / 编辑模式
+      // depts是所有的部门数据
+      // 如何去找技术部所有的子节点
+      let isRepeat = false
+      if (this.formData.id) {
+        // 有id就是编辑模式
+        // 编辑 张三 => 校验规则 除了我之外 同级部门下 不能有叫张三的
+        isRepeat = res.depts
+          .filter((item) => item.id !== this.formData.id && item.pid === this.treeNode.pid)
+          .some((item) => item.name === value)
+      } else {
+        // 没id就是新增模式
+        isRepeat = res.depts
+          .filter((item) => item.pid === this.treeNode.id)
+          .some((item) => item.name === value)
+      }
+
+      isRepeat ? callback(new Error(`同级部门下已经有${value}的部门了`)) : callback()
+    } // 自定义函数的形式校验
+    const codeCheck = async (rule, value, callback) => {
+      // 先要获取最新的组织架构数据
+      //  检查重复规则 需要支持两种 新增模式 / 编辑模式
+      const { data: res } = await getDepartment()
+      let isRepeat = false
+      if (this.formData.id) {
+        // 编辑模式  因为编辑模式下 不能算自己
+        isRepeat = res.depts.some(
+          (item) => item.id !== this.formData.id && item.code === value && value
+        )
+      } else {
+        // 新增模式
+        isRepeat = res.depts.some((item) => item.code === value && value) // 这里加一个 value不为空 因为我们的部门有可能没有code
+      }
+
+      isRepeat ? callback(new Error(`组织架构中已经有部门使用${value}编码`)) : callback()
+    }
     return {
       // 表单数据
       formData: {
@@ -95,28 +134,7 @@ export default {
           { min: 1, max: 50, message: '部门名称要求1-50个字符', trigger: 'blur' },
           {
             trigger: 'blur',
-            validator: async (rule, value, callback) => {
-              // 先要获取最新的组织架构数据
-              const { depts } = await getDepartment()
-              //  检查重复规则 需要支持两种 新增模式 / 编辑模式
-              // depts是所有的部门数据
-              // 如何去找技术部所有的子节点
-              let isRepeat = false
-              if (this.formData.id) {
-                // 有id就是编辑模式
-                // 编辑 张三 => 校验规则 除了我之外 同级部门下 不能有叫张三的
-                isRepeat = depts
-                  .filter((item) => item.id !== this.formData.id && item.pid === this.treeNode.pid)
-                  .some((item) => item.name === value)
-              } else {
-                // 没id就是新增模式
-                isRepeat = depts
-                  .filter((item) => item.pid === this.treeNode.id)
-                  .some((item) => item.name === value)
-              }
-
-              isRepeat ? callback(new Error(`同级部门下已经有${value}的部门了`)) : callback()
-            } // 自定义函数的形式校验
+            validator: nameCheck
           }
         ],
         code: [
@@ -124,23 +142,7 @@ export default {
           { min: 1, max: 50, message: '部门编码要求1-50个字符', trigger: 'blur' },
           {
             trigger: 'blur',
-            validator: async (rule, value, callback) => {
-              // 先要获取最新的组织架构数据
-              //  检查重复规则 需要支持两种 新增模式 / 编辑模式
-              const { depts } = await getDepartment()
-              let isRepeat = false
-              if (this.formData.id) {
-                // 编辑模式  因为编辑模式下 不能算自己
-                isRepeat = depts.some(
-                  (item) => item.id !== this.formData.id && item.code === value && value
-                )
-              } else {
-                // 新增模式
-                isRepeat = depts.some((item) => item.code === value && value) // 这里加一个 value不为空 因为我们的部门有可能没有code
-              }
-
-              isRepeat ? callback(new Error(`组织架构中已经有部门使用${value}编码`)) : callback()
-            }
+            validator: codeCheck
           }
         ],
         manager: [{ required: true, message: '部门负责人不能为空', trigger: 'blur' }],
