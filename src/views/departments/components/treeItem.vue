@@ -34,7 +34,7 @@
 
 <script>
 // 导入删除该item的api
-import { delDepartments, addDepartments } from '@/api/departments'
+import { delDepartments } from '@/api/departments'
 export default {
   name: 'TreeItem',
   props: {
@@ -54,8 +54,10 @@ export default {
     operateDepts(type) {
       if (type === 'add') {
         // 添加子部门的操作
+        this.$emit('addPopShow', this.treeNode)
       } else if (type === 'edit') {
         //  编辑部门的操作
+        this.$emit('editPopShow', this.treeNode)
       } else {
         //  删除操作
         this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
@@ -76,7 +78,7 @@ export default {
           .catch(() => {
             this.$message({
               type: 'info',
-              message: '已取消删除'
+              message: '您无权删除'
             })
           })
       }
