@@ -8,10 +8,12 @@
           <el-tab-pane label="角色管理">
             <!-- 新增角色按钮 -->
             <el-row style="height: 60px">
-              <el-button icon="el-icon-plus" size="small" type="primary">新增角色</el-button>
+              <el-button icon="el-icon-plus" size="small" type="primary" @click="showDia = true"
+                >新增角色</el-button
+              >
             </el-row>
             <!-- 表格 -->
-            <set-table :list="list" @update="getRoleList"></set-table>
+            <set-table :list="list" @update="getRoleList" @showDia="showDialogEdit"></set-table>
             <!-- 分页组件 -->
             <el-row type="flex" justify="center" align="middle" style="height: 60px">
               <!-- 分页组件 -->
@@ -40,6 +42,8 @@
           </el-tab-pane>
         </el-tabs>
       </el-card>
+      <!-- 编辑角色弹出层 -->
+      <edit-pop :showDialog.sync="showDia" :roleId="roleId" @updateRole="getRoleList()"></edit-pop>
     </div>
   </div>
 </template>
@@ -47,13 +51,15 @@
 <script>
 import setTable from './compontents/table.vue'
 import setForm from './compontents/form.vue'
+import editPop from './compontents/editRolePop.vue'
 import { getRoleList, getCompanyInfo } from '@/api/setting'
 import { mapGetters } from 'vuex'
 export default {
   name: 'Setting',
   components: {
     setTable,
-    setForm
+    setForm,
+    editPop
   },
   data() {
     return {
@@ -64,7 +70,11 @@ export default {
         pagesize: 10,
         total: 0 // 记录总数
       },
-      formData: {}
+      formData: {},
+      // 是否显示弹出层
+      showDia: false,
+      // 操作的角色id
+      roleId: 0
     }
   },
   computed: {
@@ -94,6 +104,10 @@ export default {
     handleCurrentChange(val) {
       this.page.page = val
       this.getRoleList()
+    },
+    showDialogEdit(roleId) {
+      this.roleId = roleId.id
+      this.showDia = true
     }
   }
 }

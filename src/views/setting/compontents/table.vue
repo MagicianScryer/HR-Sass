@@ -6,7 +6,7 @@
     <el-table-column align="center" label="操作">
       <template slot-scope="scope">
         <el-button size="small" type="success">分配权限</el-button>
-        <el-button size="small" type="primary">编辑</el-button>
+        <el-button size="small" type="primary" @click="$emit('showDia', scope.row)">编辑</el-button>
         <el-button size="small" type="danger" @click="deletRole(scope.row)">删除</el-button>
       </template>
     </el-table-column>
@@ -19,7 +19,7 @@ export default {
   name: 'SetTable',
   props: {
     list: {
-      type: Object,
+      type: Array,
       required: true
     }
   },
