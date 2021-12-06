@@ -268,6 +268,7 @@ module.exports = {
     'vue/html-closing-bracket-newline': 0,
     'pace-before-function-paren': 0,
     'space-before-function-paren': 0,
-    'vue/attribute-hyphenation': 0
+    'vue/attribute-hyphenation': 0,
+    'vue/max-attributes-per-line': 0
   }
 }
