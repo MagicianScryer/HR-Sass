@@ -15,6 +15,15 @@ import '@/icons' // icon
 import '@/permission' // 路由守卫
 
 import * as directives from '@/directives' // 自定义指令
+// 全局注册组件
+import Component from '@/components'
+import * as filters from '@/filters' // 引入工具类
+// 注册全局的过滤器
+Object.keys(filters).forEach((key) => {
+  // 注册过滤器
+  Vue.filter(key, filters[key])
+})
+Vue.use(Component) // 注册自己的插件
 
 /**
  * If you don't want to use mock-server
