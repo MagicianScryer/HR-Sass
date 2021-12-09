@@ -22,7 +22,7 @@ export function logout() {
   })
 }
 
-// 获取头像的api
+// 获取头像的详细信息
 export function getUserDetailById(id) {
   return request({
     url: `/sys/user/${id}`

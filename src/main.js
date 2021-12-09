@@ -23,7 +23,6 @@ Object.keys(filters).forEach((key) => {
   // 注册过滤器
   Vue.filter(key, filters[key])
 })
-Vue.use(Component) // 注册自己的插件
 
 /**
  * If you don't want to use mock-server
@@ -42,6 +41,7 @@ Vue.use(Component) // 注册自己的插件
 Vue.use(ElementUI)
 // 如果想要中文版 element-ui，按如下方式声明
 // Vue.use(ElementUI)
+Vue.use(Component) // 注册自己的组件, 自己注册函数函数会值执行
 
 Vue.config.productionTip = false
 // 注册自定义的指令
