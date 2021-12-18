@@ -25,7 +25,7 @@
           </el-tab-pane>
           <el-tab-pane label="个人详情">
             <!-- 放置个人详情 -->
-            <user-component></user-component>
+            <user-if></user-if>
             <!-- <user-info /> -->
           </el-tab-pane>
           <el-tab-pane label="岗位详情">
@@ -41,13 +41,13 @@
 <script>
 import { getUserDetailById } from '@/api/user'
 import { saveUserDetailById } from '@/api/employees'
-import userComponent from './userIF.vue'
+import userIf from './userIF.vue'
 import jobInfo from './jobIF.vue'
 export default {
   name: 'EmoloyeesDetail',
   components: {
     jobInfo,
-    userComponent
+    userIf
   },
   data() {
     return {
