@@ -2,6 +2,13 @@
   <div class="user-info">
     <!-- 个人信息 -->
     <el-form label-width="220px">
+      <el-row type="flex" justify="end">
+        <el-tooltip content="打印个人基本信息">
+          <router-link :to="`/employees/print/${userId}?type=personal`">
+            <i class="el-icon-printer" />
+          </router-link>
+        </el-tooltip>
+      </el-row>
       <!-- 工号 入职时间 -->
       <el-row class="inline-info">
         <el-col :span="12">
@@ -57,7 +64,7 @@
       <el-row class="inline-info">
         <el-col :span="12">
           <el-form-item label="员工头像">
-            <!-- 放置上传图片 -->
+            <image-upload ref="staffPhoto" />
           </el-form-item>
         </el-col>
       </el-row>
@@ -88,7 +95,8 @@
 
         <el-form-item label="员工照片">
           <!-- 放置上传图片 -->
-          <image-upload></image-upload>
+          <!-- ref不要重名 -->
+          <image-upload ref="myStaffPhoto" />
         </el-form-item>
         <el-form-item label="国家/地区">
           <el-select v-model="formData.nationalArea" class="inputW2">
@@ -403,19 +411,45 @@ export default {
     async getPersonalDetail() {
       const { data: res } = await getPersonalDetail(this.userId) // 获取员工数据
       this.formData = res
+      if (this.formData.staffPhoto) {
+        this.$refs.myStaffPhoto.fileList = [{ url: this.formData.staffPhoto, upload: true }]
+      }
     },
     async savePersonal() {
-      await updatePersonal({ ...this.formData, id: this.userId })
+      const fileList = this.$refs.myStaffPhoto.fileList
+      if (fileList.some((item) => !item.upload)) {
+        //  如果此时去找 upload为false的图片 找到了说明 有图片还没有上传完成
+        this.$message.warning('您当前还有图片没有上传完成！')
+        return
+      }
+      await updatePersonal({
+        ...this.formData,
+        id: this.userId,
+        staffPhoto: fileList && fileList.length === 1 ? fileList[0].url : ''
+      })
       this.$message.success('保存成功')
     },
     async saveUser() {
       //  调用父组件
-      await saveUserDetailById(this.userInfo)
+      const fileList = this.$refs.staffPhoto.fileList // 读取上传组件的数据
+      if (fileList.some((item) => !item.upload)) {
+        //  如果此时去找 upload为false的图片 找到了说明 有图片还没有上传完成
+        this.$message.warning('您当前还有图片没有上传完成！')
+        return
+      }
+      await saveUserDetailById({
+        ...this.userInfo,
+        staffPhoto: fileList && fileList.length ? fileList[0].url : ''
+      })
       this.$message.success('保存成功')
     },
     async getUserDetailById() {
       const { data: res } = await getUserDetailById(this.userId)
       this.userInfo = res
+      if (this.userInfo.staffPhoto) {
+        // 这里我们赋值，同时需要给赋值的地址一个标记 upload: true
+        this.$refs.staffPhoto.fileList = [{ url: this.userInfo.staffPhoto, upload: true }]
+      }
     }
   }
 }

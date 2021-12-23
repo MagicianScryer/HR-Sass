@@ -2,7 +2,7 @@
   <div class="dashboard-container">
     <div class="app-container">
       <page-tools :show-before="true">
-        <span slot="before">共166条记录</span>
+        <span slot="before">共{{ page.total }}条记录</span>
         <template slot="after">
           <el-button type="warning" size="small" @click="$router.push('/import?type=user')"
             >导入</el-button
@@ -16,6 +16,17 @@
         <el-table border :data="list">
           <el-table-column label="序号" sortable="" type="index" />
           <el-table-column label="姓名" sortable="" prop="username" />
+          <el-table-column label="头像" align="center">
+            <template slot-scope="{ row }">
+              <img
+                slot="reference"
+                v-imagerror="errImg"
+                :src="row.staffPhoto ? row.staffPhoto : ''"
+                style="border-radius: 50%; width: 100px; height: 100px; padding: 10px"
+                @click="showQrCode(row.staffPhoto)"
+              />
+            </template>
+          </el-table-column>
           <el-table-column label="工号" sortable="" prop="workNumber" />
           <el-table-column
             label="聘用形式"
@@ -65,6 +76,17 @@
       </el-card>
     </div>
     <add-pop :showDialog.sync="addPopShow"></add-pop>
+    <!-- 头像二维码弹出层 -->
+    <el-dialog
+      title="二维码"
+      :visible.sync="showCodeDialog"
+      @opened="showQrCode"
+      @close="imgUrl = ''"
+    >
+      <el-row type="flex" justify="center">
+        <canvas ref="myCanvas" />
+      </el-row>
+    </el-dialog>
   </div>
 </template>
 
@@ -73,6 +95,8 @@ import { getEmployeeList, delEmployee } from '@/api/employees'
 import EmployeeEnum from '@/api/constant/employees'
 // 引入添加员工组件
 import addPop from './components/addPop.vue'
+// 将图片生成QR二维码
+import QRCode from 'qrcode'
 
 export default {
   // 员工
@@ -91,7 +115,15 @@ export default {
         total: 0 // 总数
       },
       // 添加员工弹层显示
-      addPopShow: false
+      addPopShow: false,
+      // 头像请求错误图片
+      errImg: require('@/assets/common/bigUserHeader.png'),
+      // 二维码弹出层show
+      showCodeDialog: false,
+      // 二维码图片地址
+      imgUrl: '',
+      // 节流设置
+      flag: null
     }
   },
   mounted() {
@@ -201,6 +233,35 @@ export default {
       const m = (date.getMinutes() + '').padStart(2, '0')
       const s = (date.getSeconds() + '').padStart(2, '0')
       return `${Y}-${M}-${D} ${h}:${m}:${s}`
+    },
+    // 生成二维码
+    async generateQR(url) {
+      try {
+        await QRCode.toDataURL(this.$refs.myCanvas, url)
+        this.imgUrl = url
+      } catch {
+        this.$message.warning('二维码获取失败')
+      }
+    },
+    // 显示qr二维码
+    showQrCode(url) {
+      // url存在的情况下 才弹出层
+      this.imgUrl = url
+      if (this.imgUrl || this.flag) {
+        this.showCodeDialog = true
+        // 页面渲染是异步的导致拿不到myCanv
+        if (!this.flag) {
+          this.$nextTick(() => {
+            this.generateQR(this.imgUrl)
+            this.flag = setTimeout(() => {
+              clearTimeout(this.flag)
+              this.flag = null
+            }, 1000)
+          })
+        }
+      } else {
+        this.$message.warning('无头像请设置后再试')
+      }
     }
   }
 }

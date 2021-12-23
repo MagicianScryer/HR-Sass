@@ -18,6 +18,7 @@ import * as directives from '@/directives' // 自定义指令
 // 全局注册组件
 import Component from '@/components'
 import * as filters from '@/filters' // 引入工具类
+import Print from 'vue-print-nb'
 // 注册全局的过滤器
 Object.keys(filters).forEach((key) => {
   // 注册过滤器
@@ -42,6 +43,8 @@ Vue.use(ElementUI)
 // 如果想要中文版 element-ui，按如下方式声明
 // Vue.use(ElementUI)
 Vue.use(Component) // 注册自己的组件, 自己注册函数函数会值执行
+// Global instruction
+Vue.use(Print)
 
 Vue.config.productionTip = false
 // 注册自定义的指令

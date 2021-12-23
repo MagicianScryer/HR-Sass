@@ -18,6 +18,7 @@ serve.interceptors.request.use(
   (config) => {
     // Do something before request is sent
     if (store.getters.token) {
+      // token超时判断
       if (IsCheckTimeOut()) {
         // 如果它为true表示 过期了
         // token没用了 因为超时了
