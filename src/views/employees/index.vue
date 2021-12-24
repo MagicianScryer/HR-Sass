@@ -56,7 +56,7 @@
               <el-button type="text" size="small">转正</el-button>
               <el-button type="text" size="small">调岗</el-button>
               <el-button type="text" size="small">离职</el-button>
-              <el-button type="text" size="small">角色</el-button>
+              <el-button type="text" size="small" @click="showRole(scope.row)">角色</el-button>
               <el-button type="text" size="small" @click="deleteEmployee(scope.row)"
                 >删除</el-button
               >
@@ -76,6 +76,7 @@
       </el-card>
     </div>
     <add-pop :showDialog.sync="addPopShow"></add-pop>
+    <roles-pop ref="assignRole" :showRoleDialog.sync="rolePopShow" :user-id="userId"></roles-pop>
     <!-- 头像二维码弹出层 -->
     <el-dialog
       title="二维码"
@@ -97,12 +98,15 @@ import EmployeeEnum from '@/api/constant/employees'
 import addPop from './components/addPop.vue'
 // 将图片生成QR二维码
 import QRCode from 'qrcode'
+// 角色分配组件
+import rolesPop from './components/rolesPop.vue'
 
 export default {
   // 员工
   name: 'Employees',
   components: {
-    addPop
+    addPop,
+    rolesPop
   },
   data() {
     return {
@@ -123,7 +127,11 @@ export default {
       // 二维码图片地址
       imgUrl: '',
       // 节流设置
-      flag: null
+      flag: null,
+      // 控制角色分配弹出层
+      rolePopShow: false,
+      // 点击的角色的用户id
+      userId: 0
     }
   },
   mounted() {
@@ -262,6 +270,10 @@ export default {
       } else {
         this.$message.warning('无头像请设置后再试')
       }
+    },
+    showRole(item) {
+      this.userId = item.id
+      this.rolePopShow = true
     }
   }
 }
