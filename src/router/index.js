@@ -9,6 +9,8 @@ import attendancesRouter from './modules/attendances'
 import salarysRouter from './modules/salarys'
 import settingRouter from './modules/setting'
 import socialRouter from './modules/social'
+// 导入user静态路由
+import user from './modules/user'
 
 Vue.use(Router)
 
@@ -49,7 +51,7 @@ export const constantRoutes = [
     children: [
       {
         path: 'dashboard',
-        name: 'Dashboard',
+        name: 'dashboard',
         component: () => import('@/views/dashboard/index'),
         meta: { title: '首页', icon: 'dashboard' }
       }
@@ -65,7 +67,8 @@ export const constantRoutes = [
         component: () => import('@/views/import')
       }
     ]
-  }
+  },
+  user
 ]
 
 const createRouter = () =>

@@ -13,6 +13,11 @@
     <!-- <breadcrumb class="breadcrumb-container" /> -->
 
     <div class="right-menu">
+      <lang class="right-menu-item"></lang>
+      <span class="right-menu-item" style="padding-top: 4px"
+        ><theme-piker style="display: flex; align-items: center"></theme-piker
+      ></span>
+      <screen-full class="right-menu-item"></screen-full>
       <el-dropdown class="avatar-container" trigger="click">
         <div class="avatar-wrapper">
           <!-- @/assets/common/bigUserHeader.png -->
@@ -123,7 +128,8 @@ export default {
       height: 100%;
       font-size: 18px;
       color: #5a5e66;
-      vertical-align: text-bottom;
+      // vertical-align: text-bottom;
+      vertical-align: middle;
 
       &.hover-effect {
         cursor: pointer;

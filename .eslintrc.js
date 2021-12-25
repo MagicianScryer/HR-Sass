@@ -269,6 +269,7 @@ module.exports = {
     'pace-before-function-paren': 0,
     'space-before-function-paren': 0,
     'vue/attribute-hyphenation': 0,
-    'vue/max-attributes-per-line': 0
+    'vue/max-attributes-per-line': 0,
+    'vue/require-prop-types': 0
   }
 }
