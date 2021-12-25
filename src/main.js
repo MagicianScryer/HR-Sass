@@ -19,6 +19,8 @@ import * as directives from '@/directives' // 自定义指令
 import Component from '@/components'
 import * as filters from '@/filters' // 引入工具类
 import Print from 'vue-print-nb'
+// 全局混入检查功能权限函数
+import mixIn from '@/mixin/checkPermission'
 // 注册全局的过滤器
 Object.keys(filters).forEach((key) => {
   // 注册过滤器
@@ -45,6 +47,8 @@ Vue.use(ElementUI)
 Vue.use(Component) // 注册自己的组件, 自己注册函数函数会值执行
 // Global instruction
 Vue.use(Print)
+// 注册混入
+Vue.mixin(mixIn)
 
 Vue.config.productionTip = false
 // 注册自定义的指令

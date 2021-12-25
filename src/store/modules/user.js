@@ -2,6 +2,8 @@
 import { getToken, setToken, removeToken, setTimeStamp } from '@/utils/auth'
 // 导入登入api
 import { login, getUserInfo, getUserDetailById } from '@/api/user'
+// 导入重置路由函数
+import { resetRouter } from '@/router'
 
 // 状态
 const state = {
@@ -50,6 +52,9 @@ const actions = {
   logout(context) {
     context.commit('removeToken')
     context.commit('removeUserInfo')
+    resetRouter()
+    context.commit('permission/setRoutes', [], { root: true })
+    // 子模块调用子模块的action 可以 将 commit的第三个参数 设置成  { root: true } 就表示当前的context不是子模块了 而是父模块
   }
 }
 export default {
