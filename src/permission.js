@@ -12,9 +12,17 @@ const whiteList = ['/login', '/404']
 router.beforeEach(async (to, from, next) => {
   NProgress.start() // 开启进度条
   if (store.getters.token) {
-    to.path === '/login' ? next('/') : next()
-    if (!store.getters.userId) {
-      await store.dispatch('user/getUserInfo')
+    if (to.path === '/login') {
+      next('/')
+    } else {
+      if (!store.getters.userId) {
+        const { data: res } = await store.dispatch('user/getUserInfo')
+        const routes = await store.dispatch('permission/filterRoutes', res.roles.menus)
+        router.addRoutes(routes) // 添加动态路由到路由表  铺路
+        next(to.path) // 相当于跳到对应的地址  相当于多做一次跳转 为什么要多做一次跳转
+      } else {
+        next()
+      }
     }
   } else {
     whiteList.indexOf(to.path) > -1 ? next() : next('/login')
